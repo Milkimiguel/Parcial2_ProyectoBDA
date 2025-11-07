@@ -4,7 +4,9 @@ from pymongo.errors import ServerSelectionTimeoutError, ConnectionFailure
 
 # --- Módulo para gestionar la conexión a la base de datos ---
 
-def get_db(uri, db_name):
+def get_db():
+    uri = "mongodb+srv://a361031:IoKRukAmh0naLRTU@proyecto2bda.pvcqdkd.mongodb.net/?appName=Proyecto2BDA"
+    db_name = "proyecto2BDA"
     try:
         client = MongoClient(uri, serverSelectionTimeoutMS=5000)
         client.admin.command("ping")
@@ -18,15 +20,9 @@ def get_db(uri, db_name):
         return None
 
 
-db = get_db("mongodb+srv://a361031:IoKRukAmh0naLRTU@proyecto2bda.pvcqdkd.mongodb.net/?appName=Proyecto2BDA", "proyecto2BDA")
+db = get_db()
 if db is not None:
-    try:
-        collections = db.list_collection_names()
-        print("Colecciones:", collections)
-
-    except Exception as e:
-        print(f"Error al acceder a la base de datos: {e}")
-        
+    print("Conexión a la base de datos exitosa")
 else:
     print("No se pudo establecer conexión con la base de datos")
 
