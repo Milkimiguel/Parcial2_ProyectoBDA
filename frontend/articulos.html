@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Admin - Artículos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Blog Admin Panel</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="articulos.html" class="active">Artículos</a></li>
+                    <li><a href="categorias.html">Categorías</a></li>
+                    <li><a href="comentarios.html">Comentarios</a></li>
+                    <li><a href="tags.html">Tags</a></li>
+                    <li><a href="usuarios.html">Usuarios</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="management-section">
+            <h2>Gestión de Artículos</h2>
+            
+            <div class="form-container">
+                <h3 id="form-title">Agregar Nuevo Artículo</h3>
+                <form id="article-form">
+                    <input type="hidden" id="article-id">
+                    <div class="form-group">
+                        <label for="titulo">Título:</label>
+                        <input type="text" id="titulo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="article-text">Contenido:</label>
+                        <textarea id="article-text" rows="6" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="button" id="cancel-edit" class="btn btn-secondary">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="table-container">
+                <h3>Lista de Artículos</h3>
+                <table id="articles-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Título</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los artículos se cargarán dinámicamente aquí -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Blog Admin - Proyecto Bases de Datos Avanzadas</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

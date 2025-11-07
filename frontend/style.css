@@ -1,0 +1,347 @@
+/* ✒️ Importar fuente de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+/* 🎨 Variables de Color y Estilo */
+:root {
+    --bg-color-dark: #121828; /* Fondo principal muy oscuro */
+    --bg-color-light: #1B233B; /* Fondo para elementos como tarjetas */
+    --primary-color: #00CFE8;   /* Color de acento principal (cian) */
+    --secondary-color: #7A5AF8; /* Color de acento secundario (púrpura) */
+    --text-color-primary: #E2E8F0; /* Texto principal claro */
+    --text-color-secondary: #94A3B8; /* Texto secundario más tenue */
+    --border-color: rgba(148, 163, 184, 0.2);
+    --shadow-color: rgba(0, 207, 232, 0.15);
+    --gradient: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    --border-radius-md: 12px;
+    --transition-speed: 0.3s;
+}
+
+/* ✨ Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* 🌐 Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color-primary);
+    background-color: var(--bg-color-dark);
+    animation: fadeIn var(--transition-speed) ease-in-out;
+}
+
+/* 📜 Estilos de la barra de scroll */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-color-dark);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+
+/* Contenedor principal */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* 🔝 Header (Efecto "Glassmorphism") */
+header {
+    background: rgba(27, 35, 59, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 1rem 0;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header h1 {
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: white;
+}
+
+nav ul {
+    display: inline-flex;
+    list-style: none;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+nav ul li a {
+    color: var(--text-color-secondary);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all var(--transition-speed) ease;
+    position: relative;
+    font-weight: 500;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+    color: var(--text-color-primary);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 📌 Main content */
+main {
+    padding: 2.5rem 0;
+    min-height: calc(100vh - 140px);
+}
+
+/* Sección bienvenida */
+.welcome-section h2 {
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    font-weight: 600;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: slideUp 0.5s ease-out;
+}
+
+.welcome-section p {
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+    color: var(--text-color-secondary);
+    animation: slideUp 0.6s ease-out;
+}
+
+/* 📊 Tarjetas */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background: var(--bg-color-light);
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    animation: slideUp 0.5s ease-out forwards;
+    opacity: 0; /* Inicia oculto para la animación */
+    
+}
+
+.card a{
+    text-decoration: none;
+    color: aliceblue;
+}
+
+/* Animación escalonada para las tarjetas */
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+
+
+.card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 8px 30px var(--shadow-color);
+}
+
+.card h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text-color-primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.card p {
+    margin-bottom: 1rem;
+    color: var(--text-color-secondary);
+}
+
+/* 📑 Formularios y Tablas */
+.form-container,
+.table-container {
+    background: var(--bg-color-light);
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    animation: slideUp 0.7s ease-out;
+}
+
+.form-container h3, .table-container h3 {
+    margin-bottom: 1.5rem;
+    color: var(--text-color-primary);
+    font-size: 1.5rem;
+    border-left: 3px solid var(--primary-color);
+    padding-left: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-primary);
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--shadow-color);
+    outline: none;
+}
+
+/* 🎯 Tablas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+table thead {
+    border-bottom: 2px solid var(--primary-color);
+}
+
+table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-color-primary);
+}
+
+table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+table tbody tr {
+    transition: background-color var(--transition-speed);
+}
+
+table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+table tbody tr:hover {
+    background-color: rgba(0, 207, 232, 0.05);
+}
+
+/* 🔘 Botones */
+button,
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease-in-out;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: var(--gradient);
+    color: white;
+    box-shadow: 0 4px 15px rgba(122, 90, 248, 0.2);
+}
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 207, 232, 0.3);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-color-primary);
+    border: 1px solid var(--border-color);
+}
+.btn-secondary:hover {
+    background: var(--text-color-primary);
+    color: var(--bg-color-dark);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* 🔻 Footer */
+footer {
+    background: var(--bg-color-light);
+    color: var(--text-color-secondary);
+    text-align: center;
+    padding: 1.5rem 0;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+    header {
+        text-align: center;
+    }
+    
+    header h1, nav ul {
+        display: block;
+        margin-bottom: 1rem;
+    }
+       
+    nav ul li {
+        display: block;
+        margin: 0.5rem 0;
+    }
+}
