@@ -1,1 +1,7 @@
 __pycache__/db.cpython-313.pyc
+__pycache__/extensions.cpython-314.pyc
+routes/__pycache__/articulos.cpython-314.pyc
+routes/__pycache__/categorias.cpython-314.pyc
+routes/__pycache__/comentarios.cpython-314.pyc
+routes/__pycache__/tags.cpython-314.pyc
+routes/__pycache__/usuarios.cpython-314.pyc
