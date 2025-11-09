@@ -1,7 +1,7 @@
 from flask import Flask
-from flask_pymongo import PyMongo
 from flask_cors import CORS
 import os
+from extensions import mongo  # <--- Importa 'mongo' desde el nuevo archivo
 
 # Importar los Blueprints (los archivos de rutas)
 from routes.articulos import articulos_bp
@@ -14,24 +14,19 @@ from routes.usuarios import usuarios_bp
 app = Flask(__name__)
 
 # --- Configuración ---
-
-# 1. Habilitar CORS: Permite que tu JS (frontend) se comunique con este backend
 CORS(app)
-
-# 2. Configurar MongoDB Atlas
-# (Reemplaza con tu cadena de conexión)
-app.config["MONGO_URI"] = os.environ.get("MONGO_URI", "mongodb+srv://<usuario>:<password>@<tu-cluster>.mongodb.net/<tu-db>?retryWrites=true&w=majority")
+app.config["MONGO_URI"] = os.environ.get("MONGO_URI", "")
 
 # 3. Inicializar PyMongo
-# Esta variable 'mongo' estará disponible en todas tus rutas
+#    Usa .init_app() para conectar la extensión con la app
 try:
-    mongo = PyMongo(app)
+    mongo.init_app(app) 
     print("Conexión a MongoDB Atlas exitosa.")
 except Exception as e:
     print(f"Error conectando a MongoDB: {e}")
 
 # --- Registrar los Blueprints (Endpoints) ---
-# Le decimos a Flask que todas estas rutas empiezan con /api
+# (Esto se queda igual)
 app.register_blueprint(articulos_bp, url_prefix='/api/articulos')
 app.register_blueprint(categorias_bp, url_prefix='/api/categorias')
 app.register_blueprint(comentarios_bp, url_prefix='/api/comentarios')

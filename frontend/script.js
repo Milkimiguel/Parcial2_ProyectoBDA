@@ -118,12 +118,12 @@ async function loadRealData() {
                 const tr = document.createElement('tr');
                 // --- CAMBIO: Se eliminó el botón de Editar ---
                 tr.innerHTML = `
-                    <td>${comentario.comentario_id}</td>
-                    <td>${comentario.titulo_articulo} (ID: ${comentario.articulo_id})</td>
+                    <td>${comentario._id}</td>
+                    <td>${comentario.article_title} (ID: ${comentario.article_id})</td>
                     <td>${comentario.user_name} (ID: ${comentario.user_id})</td>
-                    <td>${comentario.texto_com}</td>
+                    <td>${comentario.comment}</td>
                     <td class="action-buttons">
-                        <button class="btn btn-danger btn-sm" onclick="deleteComment(${comentario.comentario_id})">Eliminar</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteComment(${comentario._id})">Eliminar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -139,11 +139,11 @@ async function loadRealData() {
             tags.forEach(tag => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${tag.tag_name}</td>
-                    <td>${tag.url_tag}</td>
+                    <td>${tag.tname}</td>
+                    <td>${tag.tagurl}</td>
                     <td class="action-buttons">
-                        <button class="btn btn-primary btn-sm" onclick="editTag('${tag.tag_name.replace(/'/g, "\\'")}', '${tag.url_tag.replace(/'/g, "\\'")}')">Editar</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteTag('${tag.tag_name.replace(/'/g, "\\'")}')">Eliminar</button>
+                        <button class="btn btn-primary btn-sm" onclick="editTag('${tag.tname.replace(/'/g, "\\'")}', '${tag.tagurl.replace(/'/g, "\\'")}')">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTag('${tag.tname.replace(/'/g, "\\'")}')">Eliminar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -159,11 +159,11 @@ async function loadRealData() {
             usuarios.forEach(usuario => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${usuario.user_id}</td>
-                    <td>${usuario.user_name}</td>
+                    <td>${usuario._id}</td>
+                    <td>${usuario.name}</td>
                     <td>${usuario.email}</td>
                     <td class="action-buttons">
-                        <button class="btn btn-primary btn-sm" onclick="editUser('${usuario.email.replace(/'/g, "\\'")}', '${usuario.user_name.replace(/'/g, "\\'")}', '${usuario.email.replace(/'/g, "\\'")}')">Editar</button>
+                        <button class="btn btn-primary btn-sm" onclick="editUser('${usuario.email.replace(/'/g, "\\'")}', '${usuario.name.replace(/'/g, "\\'")}', '${usuario.email.replace(/'/g, "\\'")}')">Editar</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteUser('${usuario.email.replace(/'/g, "\\'")}')">Eliminar</button>
                     </td>
                 `;

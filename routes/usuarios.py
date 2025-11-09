@@ -1,56 +1,90 @@
 from flask import Blueprint, request, jsonify
-from app import mongo
+from extensions import mongo
 import urllib.parse
 from bson import json_util
 import json
 
-usuarios_bp = Blueprint('usuarios', __name__)
+# El nombre del blueprint debe coincidir con el Blueprint de app.py
+usuarios_bp = Blueprint('usuarios', __name__) 
 
 # GET /api/usuarios
-@usuarios_bp.route('/', methods=['GET'])
+@usuarios_bp.route('', methods=['GET'])
 def get_usuarios():
-    # --- LÓGICA DE PYMONGO AQUÍ ---
-    # cursor = mongo.db.usuarios.find()
-    # usuarios = json.loads(json_util.dumps(cursor))
-    # return jsonify(usuarios)
-    return jsonify([])
+    try:
+        cursor = mongo.db.users.find()
+        usuarios = json.loads(json_util.dumps(cursor))
+        return jsonify(usuarios)
+    except Exception as e:
+        return jsonify(error=str(e)), 500
 
 # POST /api/usuarios
-@usuarios_bp.route('/', methods=['POST'])
+@usuarios_bp.route('', methods=['POST'])
 def create_usuario():
-    data = request.get_json() # { user_name, email }
-    # --- LÓGICA DE PYMONGO AQUÍ ---
-    # mongo.db.usuarios.insert_one(data)
-    return jsonify({"message": "Usuario creado"}), 201
+    try:
+        data = request.get_json() 
+        
+        # Validar datos de entrada (basado en scriptbasemongo.txt)
+        if 'name' not in data or 'email' not in data:
+            return jsonify({"error": "Faltan los campos 'name' y 'email'"}), 400
+        
+        # Verificar si el email ya existe
+        if mongo.db.users.find_one({"email": data['email']}):
+            return jsonify({"error": "El email ya existe"}), 409 # 409 Conflict
+        
+        # --- LÓGICA CORREGIDA ---
+        result = mongo.db.users.insert_one(data)
+        
+        # Devolver el usuario recién creado
+        new_user = mongo.db.users.find_one({"_id": result.inserted_id})
+        return jsonify(json.loads(json_util.dumps(new_user))), 201
+        
+    except Exception as e:
+        return jsonify(error=str(e)), 500
 
 # PUT /api/usuarios/<originalEmail>
 @usuarios_bp.route('/<string:originalEmail>', methods=['PUT'])
 def update_usuario(originalEmail):
-    data = request.get_json()
-    # JS envía: { user_name, email, name_bool(1/0), email_bool(1/0) }
-    decoded_email = urllib.parse.unquote(originalEmail)
-    
-    # Construir el $set dinámicamente
-    updates = {}
-    if data.get('name_bool') == 1:
-        updates["user_name"] = data.get('user_name')
-    if data.get('email_bool') == 1:
-        updates["email"] = data.get('email')
-
-    if not updates:
-        return jsonify({"error": "No hay campos para actualizar"}), 400
+    try:
+        data = request.get_json()
+        decoded_email = urllib.parse.unquote(originalEmail)
         
-    # --- LÓGICA DE PYMONGO AQUÍ ---
-    # mongo.db.usuarios.update_one(
-    #   {"email": decoded_email},
-    #   {"$set": updates}
-    # )
-    return jsonify({"message": "Usuario actualizado"})
+        updates = {}
+        # Asumimos que el JS envía 'name' y 'email' basado en el script de la DB
+        if data.get('name_bool') == 1:
+            updates["name"] = data.get('name')
+        if data.get('email_bool') == 1:
+            updates["email"] = data.get('email')
+
+        if not updates:
+            return jsonify({"error": "No hay campos para actualizar"}), 400
+            
+        # --- LÓGICA CORREGIDA ---
+        result = mongo.db.users.update_one(
+            {"email": decoded_email},
+            {"$set": updates}
+        )
+        
+        if result.matched_count == 0:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+            
+        return jsonify({"message": "Usuario actualizado"})
+        
+    except Exception as e:
+        return jsonify(error=str(e)), 500
 
 # DELETE /api/usuarios/<email>
 @usuarios_bp.route('/<string:email>', methods=['DELETE'])
 def delete_usuario(email):
-    decoded_email = urllib.parse.unquote(email)
-    # --- LÓGICA DE PYMONGO AQUÍ ---
-    # mongo.db.usuarios.delete_one({"email": decoded_email})
-    return "", 204
+    try:
+        decoded_email = urllib.parse.unquote(email)
+        
+        # --- LÓGICA CORREGIDA ---
+        result = mongo.db.users.delete_one({"email": decoded_email})
+        
+        if result.deleted_count == 0:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+            
+        return "", 204 # 204 No Content (éxito sin respuesta)
+        
+    except Exception as e:
+        return jsonify(error=str(e)), 500
