@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 # --- Configuración ---
 CORS(app)
-MONGO_URI = "mongodb+srv://a361031:IoKRukAmh0naLRTU@proyecto2bda.pvcqdkd.mongodb.net/proyecto2BDA?retryWrites=true&w=majority&appName=Proyecto2BDA"
+MONGO_URI = ""
 app.config["MONGO_URI"] = MONGO_URI
 
 # 3. Inicializar PyMongo
