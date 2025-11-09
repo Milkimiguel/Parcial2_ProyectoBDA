@@ -7,35 +7,55 @@ import json
 categorias_bp = Blueprint('categorias', __name__)
 
 # GET /api/categorias
-@categorias_bp.route('', methods=['GET']) # <-- CORREGIDO: de '/' a ''
+@categorias_bp.route('', methods=['GET'])
 def get_categorias():
     try:
-        # --- LÓGICA CORREGIDA ---
-        cursor = mongo.db.categorias.find()
-        categorias = json.loads(json_util.dumps(cursor))
+        cursor = mongo.db.categories.find()
+        categorias_list = list(cursor)
+        
+        # TRANSFORMAR LOS DATOS para que coincidan con el frontend
+        categorias_transformadas = []
+        for cat in categorias_list:
+            categorias_transformadas.append({
+                '_id': cat['_id'],
+                'category_name': cat['cname'],  # Mapear cname → category_name
+                'url_cat': f"/categoria/{cat['cname'].lower().replace(' ', '-')}"  # Generar URL automáticamente
+            })
+        
+        categorias = json.loads(json_util.dumps(categorias_transformadas))
         return jsonify(categorias)
     except Exception as e:
         return jsonify(error=str(e)), 500
 
 # POST /api/categorias
-@categorias_bp.route('', methods=['POST']) # <-- CORREGIDO: de '/' a ''
+@categorias_bp.route('', methods=['POST'])
 def create_categoria():
     try:
-        data = request.get_json() # Espera: { category_name, url_cat }
+        data = request.get_json()
         
-        # --- LÓGICA CORREGIDA ---
-        # Validar campos (basado en tus comentarios)
-        if 'category_name' not in data or 'url_cat' not in data:
-            return jsonify({"error": "Faltan los campos 'category_name' y 'url_cat'"}), 400
+        # Validar campos (ahora sabemos que la DB usa 'cname')
+        if 'category_name' not in data:
+            return jsonify({"error": "Falta el campo 'category_name'"}), 400
         
-        # Verificar duplicados
-        if mongo.db.categorias.find_one({"category_name": data['category_name']}):
+        # Verificar duplicados por 'cname' (campo real en la DB)
+        if mongo.db.categories.find_one({"cname": data['category_name']}):
             return jsonify({"error": "Ese nombre de categoría ya existe"}), 409
 
-        result = mongo.db.categorias.insert_one(data)
+        # Crear documento con la estructura correcta para la DB
+        new_doc = {
+            "cname": data['category_name']  # Usar 'cname' que es el campo real
+        }
+
+        result = mongo.db.categories.insert_one(new_doc)
         
-        new_cat = mongo.db.categorias.find_one({"_id": result.inserted_id})
-        return jsonify(json.loads(json_util.dumps(new_cat))), 201
+        # Devolver datos transformados para el frontend
+        new_cat = mongo.db.categories.find_one({"_id": result.inserted_id})
+        cat_transformada = {
+            '_id': new_cat['_id'],
+            'category_name': new_cat['cname'],
+            'url_cat': f"/categoria/{new_cat['cname'].lower().replace(' ', '-')}"
+        }
+        return jsonify(json.loads(json_util.dumps(cat_transformada))), 201
         
     except Exception as e:
         return jsonify(error=str(e)), 500
@@ -44,19 +64,18 @@ def create_categoria():
 @categorias_bp.route('/<string:originalName>', methods=['PUT'])
 def update_categoria(originalName):
     try:
-        data = request.get_json() # Espera: { category_name, url_cat }
+        data = request.get_json()
         decoded_name = urllib.parse.unquote(originalName)
         
         # Validar campos
-        if 'category_name' not in data or 'url_cat' not in data:
-            return jsonify({"error": "Faltan los campos 'category_name' y 'url_cat'"}), 400
+        if 'category_name' not in data:
+            return jsonify({"error": "Falta el campo 'category_name'"}), 400
 
-        # --- LÓGICA CORREGIDA ---
-        result = mongo.db.categorias.update_one(
-            {"category_name": decoded_name},
+        # Actualizar usando 'cname' (campo real en la DB)
+        result = mongo.db.categories.update_one(
+            {"cname": decoded_name},  # Buscar por cname
             {"$set": {
-                "category_name": data.get('category_name'),
-                "url_cat": data.get('url_cat')
+                "cname": data.get('category_name')  # Actualizar cname
             }}
         )
         
@@ -74,13 +93,13 @@ def delete_categoria(name):
     try:
         decoded_name = urllib.parse.unquote(name)
         
-        # --- LÓGICA CORREGIDA ---
-        result = mongo.db.categorias.delete_one({"category_name": decoded_name})
+        # Buscar y eliminar por 'cname' (campo real en la DB)
+        result = mongo.db.categories.delete_one({"cname": decoded_name})
         
         if result.deleted_count == 0:
             return jsonify({"error": "Categoría no encontrada"}), 404
             
-        return "", 204 # Éxito sin contenido
+        return "", 204
         
     except Exception as e:
         return jsonify(error=str(e)), 500
