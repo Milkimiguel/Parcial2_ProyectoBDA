@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 # --- Configuración ---
 CORS(app)
-MONGO_URI = ""
+MONGO_URI = "Inserta URI"
 app.config["MONGO_URI"] = MONGO_URI
 
 # 3. Inicializar PyMongo
