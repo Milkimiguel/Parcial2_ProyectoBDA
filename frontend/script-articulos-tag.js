@@ -52,9 +52,8 @@ async function loadArticulosPorTag() {
     // Actualizar título
     document.getElementById('titulo-tag').textContent = `Artículos del tag: ${tag}`;
     
-    try {
+    try {  
         const response = await fetch(`${API_BASE_URL}/tag/${encodeURIComponent(tag)}/articulos`);
-        
         if (!response.ok) {
             throw new Error('Error al cargar los artículos');
         }
@@ -103,6 +102,7 @@ async function loadArticulosPorTag() {
     } catch (error) {
         console.error('Error cargando artículos:', error);
         document.getElementById('loading-message').style.display = 'none';
+        document.getElementById('no-articles-message').style.display = 'block';
         showMessage('Error al cargar los artículos: ' + error.message, 'error');
     }
 }

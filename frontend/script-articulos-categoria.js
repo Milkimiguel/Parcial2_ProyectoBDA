@@ -54,18 +54,19 @@ async function loadArticulosPorCategoria() {
     
     try {
         const response = await fetch(`${API_BASE_URL}/categoria/${encodeURIComponent(categoria)}/articulos`);
-        
         if (!response.ok) {
             throw new Error('Error al cargar los artículos');
         }
-        
         const data = await response.json();
         
         // Ocultar mensaje de carga
         document.getElementById('loading-message').style.display = 'none';
         
-        if (data.count === 0) {
-            // Mostrar mensaje de no hay artículos
+        if (
+            !data || 
+            data.count === 0 || 
+            (Array.isArray(data.articulos) && data.articulos.length === 0)
+        ) {
             document.getElementById('no-articles-message').style.display = 'block';
             return;
         }
@@ -100,7 +101,8 @@ async function loadArticulosPorCategoria() {
         
     } catch (error) {
         console.error('Error cargando artículos:', error);
-        document.getElementById('loading-message').style.display = 'none';
+        document.getElementById('loading-message').style.display = 'None';
+        document.getElementById('no-articles-message').style.display = 'block';
         showMessage('Error al cargar los artículos: ' + error.message, 'error');
     }
 }
