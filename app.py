@@ -11,13 +11,14 @@ from routes.categorias import categorias_bp
 from routes.comentarios import comentarios_bp
 from routes.tags import tags_bp
 from routes.usuarios import usuarios_bp
+from URI import URI
 
 # Crear la aplicación Flask
 app = Flask(__name__)
 
 # --- Configuración ---
 CORS(app)
-MONGO_URI = "Inserta URI"
+MONGO_URI = URI
 app.config["MONGO_URI"] = MONGO_URI
 
 # 3. Inicializar PyMongo
