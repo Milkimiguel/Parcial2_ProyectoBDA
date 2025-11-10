@@ -322,3 +322,23 @@ footer {
         margin: 0.5rem 0;
     }
 }
+
+/* Estilos específicos para la página de artículos por tag */
+.tag-highlight {
+    background: rgba(212, 175, 55, 0.3) !important;
+    border-color: var(--primary-color) !important;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+.category-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all var(--transition-speed) ease;
+    border-bottom: 1px solid transparent;
+}
+
+.category-link:hover {
+    color: #b9932f;
+    border-bottom: 1px solid var(--primary-color);
+}

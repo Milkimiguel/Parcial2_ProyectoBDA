@@ -141,12 +141,18 @@ async function loadRealData() {
             const tags = await apiCall('/tags');
             const tbody = document.querySelector('#tags-table tbody');
             tbody.innerHTML = '';
-            
+
             tags.forEach(tag => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${tag.tname}</td>
-                    <td>${tag.tagurl}</td>
+                    <td>
+                        <a href="articulos_tag.html?tag=${encodeURIComponent(tag.tname)}" 
+                        class="category-link" 
+                        title="Ver artículos con este tag">
+                            ${tag.tagurl}
+                        </a>
+                    </td>
                     <td class="action-buttons">
                         <button class="btn btn-primary btn-sm" onclick="editTag('${tag.tname.replace(/'/g, "\\'")}', '${tag.tagurl.replace(/'/g, "\\'")}')">Editar</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteTag('${tag.tname.replace(/'/g, "\\'")}')">Eliminar</button>
