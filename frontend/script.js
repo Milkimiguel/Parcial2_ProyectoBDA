@@ -73,19 +73,43 @@ async function loadRealData() {
             const tbody = document.querySelector('#articles-table tbody');
             tbody.innerHTML = '';
             
-            articulos.forEach(articulo => {
-                const tr = document.createElement('tr');
-                // --- CAMBIO: Se eliminó el botón de Editar ---
-                tr.innerHTML = `
-                    <td>${articulo.articulo_id}</td>
-                    <td>${articulo.user_name} (ID: ${articulo.user_id})</td>
-                    <td>${articulo.titulo}</td>
-                    <td class="action-buttons">
-                        <button class="btn btn-danger btn-sm" onclick="deleteArticle(${articulo.articulo_id})">Eliminar</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+        articulos.forEach(articulo => {
+            const tr = document.createElement('tr');
+            
+            // Crear elementos para tags y categorías
+            const tagsHTML = articulo.tags && articulo.tags.length > 0 
+                ? `<div class="tags-container">${articulo.tags.map(tag => `<span class="tag-pill">${tag}</span>`).join('')}</div>`
+                : '<span style="color: var(--text-color-secondary); font-style: italic;">Sin tags</span>';
+            
+            const categoriesHTML = articulo.categories && articulo.categories.length > 0 
+                ? `<div class="categories-container">${articulo.categories.map(cat => `<span class="category-pill">${cat}</span>`).join('')}</div>`
+                : '<span style="color: var(--text-color-secondary); font-style: italic;">Sin categorías</span>';
+
+            tr.innerHTML = `
+                <td>${articulo.articulo_id}</td>
+                <td>${articulo.user_name} (ID: ${articulo.user_id})</td>
+                <td>
+                    <strong>${articulo.titulo}</strong>
+                    <div class="article-details">
+                        ${articulo.content ? articulo.content.substring(0, 100) + (articulo.content.length > 100 ? '...' : '') : 'Sin contenido'}
+                    </div>
+                    <div class="comments-section">
+                        <button class="comments-toggle" onclick="toggleComments(${articulo.articulo_id})">
+                            💬 Ver comentarios
+                        </button>
+                        <div id="comments-${articulo.articulo_id}" class="comments-container"></div>
+                    </div>
+                </td>
+                <td>
+                    <div><strong>Tags:</strong> ${tagsHTML}</div>
+                    <div style="margin-top: 0.5rem;"><strong>Categorías:</strong> ${categoriesHTML}</div>
+                </td>
+                <td class="action-buttons">
+                    <button class="btn btn-danger btn-sm" onclick="deleteArticle(${articulo.articulo_id})">Eliminar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
         }
         
         // Cargar categorías (sin cambios)

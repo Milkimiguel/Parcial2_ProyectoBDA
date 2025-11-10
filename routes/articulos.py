@@ -10,28 +10,73 @@ articulos_bp = Blueprint('articulos', __name__)
 @articulos_bp.route('', methods=['GET'])
 def get_articulos():
     try:
-        # --- LÓGICA CORREGIDA: Implementar $lookups ---
+        # Pipeline mejorado con información de tags y categorías
         pipeline = [
             {
                 '$lookup': {
-                    'from': 'users', # Colección de usuarios
+                    'from': 'users',
                     'localField': 'author_id',
                     'foreignField': '_id',
                     'as': 'author_info'
                 }
             },
             {
-                '$unwind': '$author_info' # Convertir array en objeto
+                '$unwind': '$author_info'
             },
-            # (Se podrían añadir $lookups para tags y categorias si se necesita)
+            # Lookup para obtener nombres de tags
+            {
+                '$lookup': {
+                    'from': 'tags',
+                    'let': { 'tag_ids': '$tags' },
+                    'pipeline': [
+                        {
+                            '$match': {
+                                '$expr': {
+                                    '$in': ['$_id', '$$tag_ids']
+                                }
+                            }
+                        },
+                        {
+                            '$project': {
+                                'tname': 1
+                            }
+                        }
+                    ],
+                    'as': 'tags_info'
+                }
+            },
+            # Lookup para obtener nombres de categorías
+            {
+                '$lookup': {
+                    'from': 'categories',
+                    'let': { 'cat_ids': '$categories' },
+                    'pipeline': [
+                        {
+                            '$match': {
+                                '$expr': {
+                                    '$in': ['$_id', '$$cat_ids']
+                                }
+                            }
+                        },
+                        {
+                            '$project': {
+                                'cname': 1
+                            }
+                        }
+                    ],
+                    'as': 'categories_info'
+                }
+            },
             {
                 '$project': {
-                    # Mapear los campos de la DB a lo que espera el JS
-                    'articulo_id': '$_id', # JS espera 'articulo_id'
-                    'user_id': '$author_id', # JS espera 'user_id'
-                    'user_name': '$author_info.name', # JS espera 'user_name'
-                    'titulo': '$title' # JS espera 'titulo'
-                    # (Añadir 'content', 'tags', etc. si el JS los necesita)
+                    'articulo_id': '$_id',
+                    'user_id': '$author_id',
+                    'user_name': '$author_info.name',
+                    'titulo': '$title',
+                    'content': '$content',
+                    'tags': '$tags_info.tname',  # Nombres de tags
+                    'categories': '$categories_info.cname',  # Nombres de categorías
+                    'created_at': 1
                 }
             }
         ]
@@ -44,31 +89,27 @@ def get_articulos():
         return jsonify({"error": str(e)}), 500
 
 # POST /api/articulos
-@articulos_bp.route('', methods=['POST']) # <-- CORREGIDO: de '/' a ''
+@articulos_bp.route('', methods=['POST'])
 def create_articulo():
     data = request.get_json()
-    # JS envía: { user_id: 0, titulo: "...", article_text: "..." }
     try:
-        # --- LÓGICA CORREGIDA ---
-        
-        # 1. Encontrar el ID más alto actual, ya que son manuales (de scriptbasemongo.txt)
-        last_article = mongo.db.articulos.find_one(sort=[("_id", -1)])
+        # Encontrar el ID más alto actual
+        last_article = mongo.db.articles.find_one(sort=[("_id", -1)])
         new_id = (last_article["_id"] + 1) if last_article else 1
 
-        # 2. Mapear campos de JS a campos de la DB (de scriptbasemongo.txt)
         new_article = {
             "_id": new_id,
-            "title": data.get('titulo'), # JS usa 'titulo', DB usa 'title'
-            "content": data.get('article_text'), # JS usa 'article_text', DB usa 'content'
-            "author_id": data.get('user_id'), # JS usa 'user_id', DB usa 'author_id'
-            "tags": data.get('tags', []), # Asumir vacío si no se envía
-            "categories": data.get('categories', []), # Asumir vacío si no se envía
+            "title": data.get('titulo'),
+            "content": data.get('article_text'),
+            "author_id": data.get('user_id'),
+            "tags": data.get('tags', []),
+            "categories": data.get('categories', []),
             "created_at": datetime.datetime.utcnow()
         }
         
-        result = mongo.db.articulos.insert_one(new_article)
+        result = mongo.db.articles.insert_one(new_article)
         
-        new_doc = mongo.db.articulos.find_one({"_id": result.inserted_id})
+        new_doc = mongo.db.articles.find_one({"_id": result.inserted_id})
         return jsonify(json.loads(json_util.dumps(new_doc))), 201
         
     except Exception as e:
@@ -78,14 +119,59 @@ def create_articulo():
 @articulos_bp.route('/<int:id>', methods=['DELETE'])
 def delete_articulo(id):
     try:
-        # --- LÓGICA CORREGIDA ---
-        # El ID es un Int, no un ObjectId (de scriptbasemongo.txt)
-        result = mongo.db.articulos.delete_one({"_id": id})
+        result = mongo.db.articles.delete_one({"_id": id})
 
         if result.deleted_count == 0:
             return jsonify({"error": "Artículo no encontrado"}), 404
             
-        return "", 204 # Respuesta vacía, como espera el JS
+        return "", 204
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# GET /api/articulos/<id>/comentarios - Nuevo endpoint para comentarios de un artículo
+@articulos_bp.route('/<int:id>/comentarios', methods=['GET'])
+def get_comentarios_articulo(id):
+    try:
+        # Pipeline para obtener comentarios de un artículo específico
+        pipeline = [
+            {
+                '$match': {
+                    'article_id': id
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'users',
+                    'localField': 'user_id',
+                    'foreignField': '_id',
+                    'as': 'user_info'
+                }
+            },
+            {
+                '$unwind': '$user_info'
+            },
+            {
+                '$project': {
+                    '_id': 1,
+                    'comment': 1,
+                    'created_at': 1,
+                    'user_name': '$user_info.name',
+                    'user_id': 1
+                }
+            },
+            {
+                '$sort': {'created_at': -1}  # Más recientes primero
+            }
+        ]
+        
+        comentarios = list(mongo.db.comments.aggregate(pipeline))
+        
+        return json.loads(json_util.dumps({
+            "articulo_id": id,
+            "count": len(comentarios),
+            "comentarios": comentarios
+        }))
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
