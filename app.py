@@ -11,6 +11,7 @@ from routes.categorias import categorias_bp
 from routes.comentarios import comentarios_bp
 from routes.tags import tags_bp
 from routes.usuarios import usuarios_bp
+from routes.categoria_articulos import categoria_articulos_bp
 from URI import URI
 
 # Crear la aplicación Flask
@@ -36,6 +37,7 @@ app.register_blueprint(categorias_bp, url_prefix='/api/categorias')
 app.register_blueprint(comentarios_bp, url_prefix='/api/comentarios')
 app.register_blueprint(tags_bp, url_prefix='/api/tags')
 app.register_blueprint(usuarios_bp, url_prefix='/api/usuarios')
+app.register_blueprint(categoria_articulos_bp, url_prefix='/api/categoria')
 
 # --- Endpoints de Debug Mejorados ---
 @app.route('/api/debug/connection')
@@ -188,6 +190,37 @@ def debug_categorias():
             "status": "error",
             "message": str(e)
         }), 500
+
+@app.route('/api/debug/categoria-tecnologia')
+def debug_categoria_tecnologia():
+    """Endpoint específico para debug de la categoría Tecnología"""
+    try:
+        # Verificar la categoría Tecnología
+        categoria = mongo.db.categories.find_one({"cname": "Tecnología"})
+        print(f"Categoría Tecnología: {categoria}")
+        
+        if not categoria:
+            return jsonify({"error": "No se encontró la categoría Tecnología"}), 404
+        
+        categoria_id = categoria['_id']
+        print(f"ID de categoría Tecnología: {categoria_id}, tipo: {type(categoria_id)}")
+        
+        # Buscar artículos con esta categoría
+        articulos = list(mongo.db.articles.find({"categories": categoria_id}))
+        print(f"Artículos encontrados: {len(articulos)}")
+        
+        for art in articulos:
+            print(f"Artículo: {art['title']}, Categorías: {art.get('categories', [])}")
+        
+        return jsonify({
+            "categoria": categoria,
+            "categoria_id": categoria_id,
+            "articulos_count": len(articulos),
+            "articulos_titulos": [art["title"] for art in articulos]
+        })
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # --- Iniciar el servidor ---
 if __name__ == '__main__':

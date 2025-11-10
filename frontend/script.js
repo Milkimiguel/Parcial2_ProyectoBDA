@@ -93,12 +93,18 @@ async function loadRealData() {
             const categorias = await apiCall('/categorias');
             const tbody = document.querySelector('#categories-table tbody');
             tbody.innerHTML = '';
-            
+
             categorias.forEach(categoria => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${categoria.category_name}</td>
-                    <td>${categoria.url_cat}</td>
+                    <td>
+                        <a href="articulos_categoria.html?categoria=${encodeURIComponent(categoria.category_name)}" 
+                        class="category-link" 
+                        title="Ver artículos de esta categoría">
+                            ${categoria.url_cat}
+                        </a>
+                    </td>
                     <td class="action-buttons">
                         <button class="btn btn-primary btn-sm" onclick="editCategory('${categoria.category_name.replace(/'/g, "\\'")}', '${categoria.url_cat.replace(/'/g, "\\'")}')">Editar</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteCategory('${categoria.category_name.replace(/'/g, "\\'")}')">Eliminar</button>
