@@ -5,6 +5,7 @@ db.createCollection("articulos")
 db.createCollection("comentarios")
 
 db.users.insertMany([
+  { _id: 0, name: "Admin", email: "admin@admin.com"},
   { _id: 1, name: "Carlos Mendoza", email: "carlos.mendoza@example.com" },
   { _id: 2, name: "María López", email: "maria.lopez@example.com" },
   { _id: 3, name: "Juan Pérez", email: "juan.perez@example.com" },

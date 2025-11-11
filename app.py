@@ -158,7 +158,7 @@ def debug_categorias():
     try:
         # Verificar si la colección existe
         collections = mongo.db.list_collection_names()
-        print(f"📂 Colecciones disponibles: {collections}")
+        print(f"Colecciones disponibles: {collections}")
         
         if 'categories' not in collections:
             return jsonify({
@@ -168,16 +168,16 @@ def debug_categorias():
         
         # Contar documentos
         count = mongo.db.categories.count_documents({})
-        print(f"📊 Número de categorías: {count}")
+        print(f"Número de categorías: {count}")
         
         # Obtener todas las categorías
         categorias = list(mongo.db.categories.find())
-        print(f"🔍 Categorías encontradas: {categorias}")
+        print(f"Categorías encontradas: {categorias}")
         
         # Verificar la estructura de los documentos
         if categorias:
             primera_categoria = categorias[0]
-            print(f"📝 Estructura de la primera categoría: {primera_categoria}")
+            print(f"Estructura de la primera categoría: {primera_categoria}")
         
         return json.loads(json_util.dumps({
             "status": "success",
@@ -187,7 +187,7 @@ def debug_categorias():
         }))
         
     except Exception as e:
-        print(f"❌ Error en debug_categorias: {str(e)}")
+        print(f"Error en debug_categorias: {str(e)}")
         return jsonify({
             "status": "error",
             "message": str(e)

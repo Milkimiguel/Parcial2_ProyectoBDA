@@ -72,13 +72,13 @@ async function loadArticulosPorTag() {
         // Mostrar contenedor de artículos
         const container = document.getElementById('articles-container');
         container.style.display = 'block';
-        
+
         // Generar HTML para los artículos
         container.innerHTML = data.articulos.map(articulo => `
             <div class="article-card">
                 <div class="article-header">
                     <h3 class="article-title">${articulo.title}</h3>
-                    <span class="article-date">${new Date(articulo.created_at).toLocaleDateString('es-ES')}</span>
+                    <span class="article-date">${new Date(articulo.created_at.$date).toLocaleDateString('es-ES')}</span>
                 </div>
                 <div class="article-author">
                     <strong>Autor:</strong> ${articulo.author_name}

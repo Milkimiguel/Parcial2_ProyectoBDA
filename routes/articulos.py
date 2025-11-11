@@ -38,7 +38,8 @@ def get_articulos():
                         },
                         {
                             '$project': {
-                                'tname': 1
+                                'tname': 1,
+                                '_id': 0
                             }
                         }
                     ],
@@ -60,7 +61,8 @@ def get_articulos():
                         },
                         {
                             '$project': {
-                                'cname': 1
+                                'cname': 1,
+                                '_id': 0
                             }
                         }
                     ],
@@ -74,8 +76,8 @@ def get_articulos():
                     'user_name': '$author_info.name',
                     'titulo': '$title',
                     'content': '$content',
-                    'tags': '$tags_info.tname',  # Nombres de tags
-                    'categories': '$categories_info.cname',  # Nombres de categorías
+                    'tags': '$tags_info',  # Nombres de tags
+                    'categories': '$categories_info',  # Nombres de categorías
                     'created_at': 1
                 }
             }

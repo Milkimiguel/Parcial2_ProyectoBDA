@@ -80,7 +80,7 @@ async function loadArticulosPorCategoria() {
             <div class="article-card">
                 <div class="article-header">
                     <h3 class="article-title">${articulo.title}</h3>
-                    
+                    <span class="article-date">${new Date(articulo.created_at.$date).toLocaleDateString('es-ES')}</span>
                 </div>
                 <div class="article-author">
                     <strong>Autor:</strong> ${articulo.author_name}
@@ -93,7 +93,9 @@ async function loadArticulosPorCategoria() {
                         <strong>Tags:</strong> ${articulo.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                     </div>
                     <div class="article-categories">
-                        <strong>Categorías:</strong> ${articulo.categories.map(cat => `<span class="category">${cat}</span>`).join('')}
+                        <strong>Categorías:</strong> ${articulo.categories.map(cat => 
+                            cat === categoria ? `<span class="category tag-highlight">${cat}</span>` : `<span class="category">${cat}</span>`
+                        ).join('')}
                     </div>
                 </div>
             </div>

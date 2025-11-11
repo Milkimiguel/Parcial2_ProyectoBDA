@@ -1,5 +1,37 @@
 // Configuración de la API
 const API_BASE_URL = 'http://localhost:5000/api';
+// Sets para almacenar los seleccionados
+const selectedCategories = new Set();
+const selectedTags = new Set();
+
+// Función genérica para renderizar la lista
+function renderSelectableList(containerId, items, selectedSet) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+
+    if (!items || items.length === 0) {
+        container.innerHTML = `<p class="no-items">No hay elementos disponibles</p>`;
+        return;
+    }
+
+    items.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'selectable-item';
+        el.textContent = item.category_name || item.tname || item.tagurl || item.url_cat || 'Desconocido';
+
+        el.addEventListener('click', () => {
+            if (selectedSet.has(item._id)) {
+                selectedSet.delete(item._id);
+                el.classList.remove('selected');
+            } else {
+                selectedSet.add(item._id);
+                el.classList.add('selected');
+            }
+        });
+
+        container.appendChild(el);
+    });
+}
 
 // Función para mostrar mensajes al usuario
 function showMessage(message, type = 'info') {
@@ -63,6 +95,31 @@ async function apiCall(endpoint, options = {}) {
         throw error;
     }
 }
+// Funciones para obtener datos desde la API
+async function loadTags() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/tags`);
+        const data = await response.json();
+        console.log(data)
+        renderSelectableList('tags-container', data, selectedTags);
+    } catch (error) {
+        console.error('Error al cargar los tags:', error);
+        showMessage('Error al cargar los tags', 'error');
+    }
+}
+
+async function loadCategorias() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/categorias`);
+        const data = await response.json();
+        console.log(data)
+        renderSelectableList('categories-container', data, selectedCategories);
+        console.log(selectedTags)
+    } catch (error) {
+        console.error('Error al cargar las categorías:', error);
+        showMessage('Error al cargar las categorías', 'error');
+    }
+}
 
 // Función para cargar datos reales desde la API
 async function loadRealData() {
@@ -77,12 +134,13 @@ async function loadRealData() {
             const tr = document.createElement('tr');
             
             // Crear elementos para tags y categorías
+            console.log(articulos)
             const tagsHTML = articulo.tags && articulo.tags.length > 0 
-                ? `<div class="tags-container">${articulo.tags.map(tag => `<span class="tag-pill">${tag}</span>`).join('')}</div>`
+                ? `<div class="tags-container">${articulo.tags.map(tag => `<a href=articulos_tag.html?tag=${encodeURIComponent(tag.tname)} class="tag-pill">${tag.tname}</a>`).join('')}</div>`
                 : '<span style="color: var(--text-color-secondary); font-style: italic;">Sin tags</span>';
             
             const categoriesHTML = articulo.categories && articulo.categories.length > 0 
-                ? `<div class="categories-container">${articulo.categories.map(cat => `<span class="category-pill">${cat}</span>`).join('')}</div>`
+                ? `<div class="categories-container">${articulo.categories.map(cat => `<a href=articulos_categoria.html?categoria=${encodeURIComponent(cat.cname)} class="category-pill">${cat.cname}</a>`).join('')}</div>`
                 : '<span style="color: var(--text-color-secondary); font-style: italic;">Sin categorías</span>';
 
             tr.innerHTML = `
@@ -115,6 +173,7 @@ async function loadRealData() {
         // Cargar categorías (sin cambios)
         if (document.getElementById('categories-table')) {
             const categorias = await apiCall('/categorias');
+            console.log(categorias)
             const tbody = document.querySelector('#categories-table tbody');
             tbody.innerHTML = '';
 
@@ -294,6 +353,13 @@ async function deleteUser(email) {
 // Configuración de formularios
 document.addEventListener('DOMContentLoaded', function() {
     loadRealData();
+    const tagsContainer = document.getElementById('tags-container');
+    const categoriesContainer = document.getElementById('categories-container');
+
+    if (tagsContainer && categoriesContainer) {
+        loadTags();
+        loadCategorias();
+    }
     
     const cancelButtons = document.querySelectorAll('#cancel-edit');
     cancelButtons.forEach(button => {
@@ -317,11 +383,13 @@ document.addEventListener('DOMContentLoaded', function() {
             
             try {
                 if (form.id === 'article-form') {
-                    // --- CAMBIO: user_id se establece a 0 en la inserción ---
+                    
                     const data = {
                         user_id: 0, // ID de Admin
                         titulo: document.getElementById('titulo').value,
-                        article_text: document.getElementById('article-text').value
+                        article_text: document.getElementById('article-text').value,
+                        tags: Array.from(selectedTags),
+                        categories: Array.from(selectedCategories)
                     };
                     
                     // La lógica de 'isEdit' ya no es necesaria aquí, pero la dejamos por si se reactiva en el futuro
@@ -408,6 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     formTitle.textContent = formTitle.textContent.replace('Editar', 'Agregar Nuevo');
                 }
                 loadRealData();
+
                 
             } catch (error) {
                 // El error ya se maneja en apiCall

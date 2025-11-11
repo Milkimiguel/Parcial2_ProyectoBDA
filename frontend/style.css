@@ -497,3 +497,39 @@ footer {
         gap: 0.2rem;
     }
 }
+
+/* Lista de elementos seleccionables */
+.selectable-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #0e0e0e;
+    border: 1px solid #3a321f;
+    border-radius: 8px;
+    padding: 10px;
+    min-height: 45px;
+}
+
+/* Cada opción tipo chip */
+.selectable-item {
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: #1b1b1b;
+    color: #f8f8f8;
+    border: 1px solid #b38b2a;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+}
+
+.selectable-item:hover {
+    background: #b38b2a;
+    color: #121212;
+    transform: scale(1.05);
+}
+
+.selectable-item.selected {
+    background: linear-gradient(135deg, #cfa93b, #e2b93a);
+    color: #121212;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
