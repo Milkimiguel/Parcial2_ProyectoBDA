@@ -66,13 +66,13 @@ def create_comentario():
         
         # --- LÓGICA CORREGIDA ---
         # Campos de la DB: article_id, user_id, comment
-        if 'article_id' not in data or 'user_id' not in data or 'comment' not in data:
-            return jsonify({"error": "Faltan los campos 'article_id', 'user_id' o 'comment'"}), 400
-
+        if 'articulo_id' not in data or 'user_id' not in data or 'texto_com' not in data:
+            return jsonify({"error": "Faltan los campos 'article_id', 'user_id' o 'texto_com'"}), 400
+        print(data)
         new_comment = {
-            "article_id": data.get('article_id'),
+            "article_id": data.get('articulo_id'),
             "user_id": data.get('user_id'),
-            "comment": data.get('comment'),
+            "comment": data.get('texto_com'),
             "created_at": datetime.datetime.utcnow() # Añadir fecha de creación
         }
         

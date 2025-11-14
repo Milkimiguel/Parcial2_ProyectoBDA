@@ -3,6 +3,9 @@ const API_BASE_URL = 'http://localhost:5000/api';
 // Sets para almacenar los seleccionados
 const selectedCategories = new Set();
 const selectedTags = new Set();
+// configurar path para las páginas, probando cosas...
+const path = window.location.pathname;
+
 
 // Función genérica para renderizar la lista
 function renderSelectableList(containerId, items, selectedSet) {
@@ -125,7 +128,7 @@ async function loadCategorias() {
 async function loadRealData() {
     try {
         // Cargar artículos
-        if (document.getElementById('articles-table')) {
+        if (path.includes("articulos.html")) {
             const articulos = await apiCall('/articulos');
             const tbody = document.querySelector('#articles-table tbody');
             tbody.innerHTML = '';
@@ -171,7 +174,7 @@ async function loadRealData() {
         }
         
         // Cargar categorías (sin cambios)
-        if (document.getElementById('categories-table')) {
+        if (path.includes("categorias.html")) {
             const categorias = await apiCall('/categorias');
             console.log(categorias)
             const tbody = document.querySelector('#categories-table tbody');
@@ -198,7 +201,7 @@ async function loadRealData() {
         }
         
         // Cargar comentarios
-        if (document.getElementById('comments-table')) {
+        if (path.includes("comentarios.html")) {
             const comentarios = await apiCall('/comentarios');
             const tbody = document.querySelector('#comments-table tbody');
             tbody.innerHTML = '';
@@ -220,11 +223,10 @@ async function loadRealData() {
         }
         
         // Cargar tags (sin cambios)
-        if (document.getElementById('tags-table')) {
+        if (path.includes("tags.html")) {
             const tags = await apiCall('/tags');
             const tbody = document.querySelector('#tags-table tbody');
             tbody.innerHTML = '';
-
             tags.forEach(tag => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -246,7 +248,7 @@ async function loadRealData() {
         }
         
         // Cargar usuarios (sin cambios)
-        if (document.getElementById('users-table')) {
+        if (path.includes("usuarios.html")) {
             const usuarios = await apiCall('/usuarios');
             const tbody = document.querySelector('#users-table tbody');
             tbody.innerHTML = '';
@@ -438,14 +440,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 else if (form.id === 'tag-form') {
                     // Lógica para tags sin cambios
                     const data = {
-                        tag_name: document.getElementById('tag-name').value,
-                        url_tag: document.getElementById('url-tag').value
+                        tname: document.getElementById('tag-name').value,
+                        tagurl: document.getElementById('url-tag').value
                     };
+                    console.log(data)
                     if (isEdit) {
                         const originalName = document.getElementById('original-tag-name').value;
                         await apiCall(`/tags/${encodeURIComponent(originalName)}`, {
                             method: 'PUT',
-                            body: JSON.stringify({ tag_name: data.tag_name, url_tag: data.url_tag })
+                            body: JSON.stringify({ tname: data.tname, tagurl: data.tagurl })
                         });
                     } else {
                         await apiCall('/tags', { method: 'POST', body: JSON.stringify(data) });
